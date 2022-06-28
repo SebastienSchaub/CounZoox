@@ -2,8 +2,8 @@
 
 ## Installation
 
-  Download  CounZoox.ijm. 
-  Under ImageJ : Plugins > Macros > Install...
+  - Download  CounZoox.ijm. 
+  - Under ImageJ : Plugins > Macros > Install...
   
 ## Shortcuts 
 
