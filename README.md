@@ -14,10 +14,10 @@
   > - Threshold value for algae fluorescence channel 
   > - Algua diameter range Diameter_min-Diameter_max 
 
-  **[1] MeasureCurrent :** Measure the current image, adding the results to "MySummary" datasheet
+  **[1] MeasureCurrent :** Measure the current image, adding the results to *"MySummary"* datasheet
   
-  **[2] Batch Measure :** Clear "MySummary" datasheet and do measurements for all images (including subfolders) of the selected directory. 
-  At the end, save all the measurement in the heir folder as "MySummary.csv")
+  **[2] Batch Measure :** Clear *"MySummary"* datasheet and do measurements for all images (including subfolders) of the selected directory. 
+  At the end, save all the measurement in the heir folder as *"MySummary.csv"*)
   
 ## Examples
 
