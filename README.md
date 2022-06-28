@@ -23,6 +23,8 @@
 
 Exemple.czi is provided to test the programm.
 
+More explanation in the fiel *CounZoox Manual.pdf*
+
 
 ## References
 
