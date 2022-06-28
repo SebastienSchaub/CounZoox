@@ -4,8 +4,8 @@
 // for more information contact sebastien.schaub@imev-mer.fr
 
 var MyUnit="pxl";// Default value for unit. If images are calibrated, it turns to mm
-var Algua_Thresh=newArray(0,65535);// Threshold for Reference Algua
-var Algua_Range="4-14"; // diameter in µm
+var Alga_Thresh=newArray(0,65535);// Threshold for Reference Alga
+var Alga_Range="4-14"; // diameter in µm
 var Ch_Fluo=1;// define which channel content the fluorescence to threshold
 var ChamberThickness=0.2;// depth of the chamber. 0.2mm for a Mallasez cell
 // ============================================================================
@@ -38,53 +38,53 @@ macro "MeasureCurrent [1]"{
 	
 	setSlice(1);
 	Stack.setDisplayMode("grayscale");
-	if (Algua_Thresh[0]==0){
+	if (Alga_Thresh[0]==0){
 		run("Threshold...");
 		setAutoThreshold("MaxEntropy dark");
 		waitForUser("Confirm Threshold");	
-		getThreshold(Algua_Thresh[0], Algua_Thresh[1]);
+		getThreshold(Alga_Thresh[0], Alga_Thresh[1]);
 	}
 	else {
-		setThreshold(Algua_Thresh[0], Algua_Thresh[1]);		
+		setThreshold(Alga_Thresh[0], Alga_Thresh[1]);		
 	}
 	run("Create Mask");
 	run("Watershed");
 
 // Convert diameter in area
 	D=newArray(2);
-	D=split(Algua_Range, "-");
+	D=split(Alga_Range, "-");
 	AreaRange=""+round(pow(D[0],2)*PI/4)+"-"+round(pow(D[1],2)*PI/4);
 
 	run("Analyze Particles...", "size="+AreaRange+" display clear include slice add");
 	close("mask");
 	
-	Algua_Area=0; // mean area of Algua in µm²
+	Alga_Area=0; // mean area of Alga in µm²
 	LArea=newArray(nResults);
 	LInt=newArray(nResults);
 	roiManager("deselect");
 	run("Measure");
 	for (i1=0;i1<roiManager("count")-1;i1++) {
-//		Algua_Area+=getResult("Area", i1);
+//		Alga_Area+=getResult("Area", i1);
 		LArea[i1]=getResult("Area", i1);
 		LInt[i1]=getResult("IntDen", i1);
 	}
-	Algua_N=nResults+1; 
-	Array.getStatistics(LArea, min, max, Algua_Area, Algua_Area_Std);
-	Array.getStatistics(LInt, min, max, Algua_Int, Algua_Int_Std);
-	Algua_Conc2D=Algua_N/CamArea; // number of Algua per mm²
-	Algua_Conc3D=Algua_Conc2D;
+	Alga_N=nResults+1; 
+	Array.getStatistics(LArea, min, max, Alga_Area, Alga_Area_Std);
+	Array.getStatistics(LInt, min, max, Alga_Int, Alga_Int_Std);
+	Alga_Conc2D=Alga_N/CamArea; // number of Alga per mm²
+	Alga_Conc3D=Alga_Conc2D;
 	if (unit=="microns"){
 		S=CamArea*pow(pixelWidth/1000,2);
-//		Algua_Area=Algua_Area *pow(pixelWidth,2);
+//		Alga_Area=Alga_Area *pow(pixelWidth,2);
 		V=S*ChamberThickness;
-		Algua_Conc2D=Algua_N/S;
-		Algua_Conc3D=Algua_N/V;
+		Alga_Conc2D=Alga_N/S;
+		Alga_Conc3D=Alga_N/V;
 		MyUnit="mm";
 	}
 	else{
 		S=CamArea;
 		V=S;
-		Algua_Conc2D=Algua_N/S;		
+		Alga_Conc2D=Alga_N/S;		
 	}
 	
 	IJ.renameResults("Results","tmp");
@@ -93,15 +93,15 @@ macro "MeasureCurrent [1]"{
 	n=nResults;
 	setResult("Directory", n, ImgDir);
 	setResult("Filename", n, ImgName);
-	setResult("N.Algua", n, Algua_N);
-	setResult("<Algua.Area> ["+unit+"2]", n, Algua_Area);
-	setResult("AA +/- ["+unit+"2]", n, Algua_Area_Std);
-	setResult("<Chlorophyl> [int]", n, Algua_Int);
-	setResult("Chl +/- [int]", n, Algua_Int_Std);
-	setResult("C.Algua per "+MyUnit+"^2", n, Algua_Conc2D);
-	setResult("C.Algua per "+MyUnit+"^3", n, Algua_Conc3D);
+	setResult("N.Alga", n, Alga_N);
+	setResult("<Alga.Area> ["+unit+"2]", n, Alga_Area);
+	setResult("AA +/- ["+unit+"2]", n, Alga_Area_Std);
+	setResult("<Chlorophyll> [int]", n, Alga_Int);
+	setResult("Chl +/- [int]", n, Alga_Int_Std);
+	setResult("C.Alga per "+MyUnit+"^2", n, Alga_Conc2D);
+	setResult("C.Alga per "+MyUnit+"^3", n, Alga_Conc3D);
 	setResult("Est.Vol ["+MyUnit+"^3]", n, V);
-	setResult("Thresh.Algua", n, Algua_Thresh[0]);
+	setResult("Thresh.Alga", n, Alga_Thresh[0]);
 	setResult("CamSze", n, ""+getWidth()+"x"+getHeight());	
 	setResult("PxlSze", n, ""+pixelWidth+unit);
 	
@@ -155,12 +155,12 @@ macro "Batch Measure [2]"{
 macro "EditParameters [0]"{
 	Dialog.create("Comptage Zooxanthelles Parameters");
 	Dialog.addNumber("# channel to threshold", Ch_Fluo);
-	Dialog.addNumber("Algua Threshold [0 to reboot]", Algua_Thresh[0]);
-	Dialog.addString("Algua Diameter [min-max] in µm" , Algua_Range);
+	Dialog.addNumber("Alga Threshold [0 to reboot]", Alga_Thresh[0]);
+	Dialog.addString("Alga Diameter [min-max] in µm" , Alga_Range);
 	Dialog.show();
 	Ch_Fluo = Dialog.getNumber();
-	Algua_Thresh[0] = Dialog.getNumber();
-	Algua_Range= Dialog.getString();
+	Alga_Thresh[0] = Dialog.getNumber();
+	Alga_Range= Dialog.getString();
 }
 
 // ============================================================================
@@ -188,3 +188,4 @@ function ColorImage(){
 		Stack.setDisplayMode("composite");
 		Stack.setActiveChannels("110");	
 	}
+}
