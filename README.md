@@ -28,6 +28,6 @@ More explanation in the fiel ***CounZoox Manual.pdf***
 
 ## References
 
-Paper under submission, ***TO BE UPDATED***
+- CounZoox has been published in ..., ***Paper in submission, TO BE UPDATED***
 
-contact : **sebastien.schaub@imev-mer.fr**
+- contact : **sebastien.schaub@imev-mer.fr**
