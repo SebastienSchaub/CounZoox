@@ -4,9 +4,9 @@
 // for more information contact sebastien.schaub@imev-mer.fr
 
 // Modifications
-// 2024-01-12 : bugs on measurments (Set measurements have been added to solve it)
-//              Some macros are not composite, so run("Make Composite"... have been added to force it.
-
+// 2024-01-12 : - bugs on measurments (Set measurements have been added to solve it)
+//              - Some macros are not composite, so run("Make Composite"... have been added to force it.
+//              - Batch mode now accept czi AND tif files
 
 var MyUnit="pxl";// Default value for unit. If images are calibrated, it turns to mm
 var Alga_Thresh=newArray(0,65535);// Threshold for Reference Alga
@@ -146,7 +146,7 @@ macro "Batch Measure [2]"{
         if (endsWith(list[i], "/"))
            listFiles(""+dir+list[i]);
         else{
-        	if (endsWith(list[i], ".czi")){
+        	if (endsWith(list[i], ".czi") | endsWith(list[i], ".tif")){
         		open(dir+list[i]);
         		TmpTitle2=getTitle();
         		run("MeasureCurrent [1]");
