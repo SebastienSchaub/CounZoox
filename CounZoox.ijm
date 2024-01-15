@@ -3,17 +3,24 @@
 // It is easily hijacked for other purpose. The macros are provided "as is".
 // for more information contact sebastien.schaub@imev-mer.fr
 
+// Modifications
+// 2024-01-12 : bugs on measurments (Set measurements have been added to solve it)
+//              Some macros are not composite, so run("Make Composite"... have been added to force it.
+
+
 var MyUnit="pxl";// Default value for unit. If images are calibrated, it turns to mm
 var Alga_Thresh=newArray(0,65535);// Threshold for Reference Alga
 var Alga_Range="4-14"; // diameter in µm
 var Ch_Fluo=1;// define which channel content the fluorescence to threshold
 var ChamberThickness=0.2;// depth of the chamber. 0.2mm for a Mallasez cell
+
 // ============================================================================
 macro "AutoInstall"{
 	run("Install...", "install=["+getDirectory("macros")+"MICA\\CounZoox.ijm]");
 }
 // ============================================================================
 macro "Init [9]"{
+	run("Set Measurements...", "area mean modal centroid integrated redirect=None decimal=3");
 	if(isOpen("MySummary")) close("MySummary");
 	if (nImages==0) newImage("pipo", "8-bit black", 10, 10, 1);
 	run("Measure");
@@ -66,6 +73,7 @@ macro "MeasureCurrent [1]"{
 	for (i1=0;i1<roiManager("count")-1;i1++) {
 //		Alga_Area+=getResult("Area", i1);
 		LArea[i1]=getResult("Area", i1);
+		print(LArea[i1]);
 		LInt[i1]=getResult("IntDen", i1);
 	}
 	Alga_N=nResults+1; 
@@ -165,6 +173,9 @@ macro "EditParameters [0]"{
 
 // ============================================================================
 function ColorImage(){
+//	Stack.getDimensions(width, height, channels, slices, frames);
+//	print("C"+channels+" S"+slices+"F"+frames);
+	run("Make Composite", "display=Composite");
 	if (nSlices==2){
 		setSlice(2);
 		run("Enhance Contrast", "saturated=0.05");
