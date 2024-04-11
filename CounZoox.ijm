@@ -1,9 +1,11 @@
 
-// CounZoox is a macro dveeloped to count zooxanthellae, linked to the paper .....
+// CounZoox is a macro dveeloped to count zooxanthellae, linked to the paper https://royalsocietypublishing.org/doi/full/10.1098/rsos.231683
 // It is easily hijacked for other purpose. The macros are provided "as is".
 // for more information contact sebastien.schaub@imev-mer.fr
 
 // Modifications
+// 2024-04-11 : - works on single channel image  
+//              - JPG image (the channel to analyse is 1=Red, 2=Green, 3=Blue). it works BUT NOT RECOMMANDED
 // 2024-01-12 : - bugs on measurments (Set measurements have been added to solve it)
 //              - Some macros are not composite, so run("Make Composite"... have been added to force it.
 //              - Batch mode now accept czi AND tif files
@@ -36,15 +38,22 @@ macro "MeasureCurrent [1]"{
 	roiManager("reset");
 	if (nImages==0) open();
 
-	ColorImage();
+	if (bitDepth()==24) {
+		run("RGB Stack");
+	}
+	if (nSlices>1) {
+		ColorImage();
+		setSlice(Ch_Fluo);
+		Stack.setDisplayMode("grayscale");
+	}
 	ImgDir=getInfo("image.directory");
 	ImgName=getInfo("image.filename");
 	run("Select None");
 	CamArea=getWidth()*getHeight();
 	getPixelSize (unit, pixelWidth, pixelHeight);
 	
-	setSlice(1);
-	Stack.setDisplayMode("grayscale");
+
+
 	if (Alga_Thresh[0]==0){
 		run("Threshold...");
 		setAutoThreshold("MaxEntropy dark");
@@ -96,8 +105,7 @@ macro "MeasureCurrent [1]"{
 	}
 	
 	IJ.renameResults("Results","tmp");
-	
-	IJ.renameResults("MySummary","Results");
+	if (isOpen("MySummary")) IJ.renameResults("MySummary","Results");
 	n=nResults;
 	setResult("Directory", n, ImgDir);
 	setResult("Filename", n, ImgName);
@@ -115,8 +123,10 @@ macro "MeasureCurrent [1]"{
 	
 	IJ.renameResults("Results","MySummary");
 	IJ.renameResults("tmp","Results");
-	Stack.setDisplayMode("composite");
-	Stack.setActiveChannels("110");
+	if (nSlices>1){
+		Stack.setDisplayMode("composite");
+		Stack.setActiveChannels("110");
+	}
 
 	selectWindow("MySummary");
 }
@@ -146,7 +156,7 @@ macro "Batch Measure [2]"{
         if (endsWith(list[i], "/"))
            listFiles(""+dir+list[i]);
         else{
-        	if (endsWith(list[i], ".czi") | endsWith(list[i], ".tif")){
+        	if (endsWith(list[i], ".czi") | endsWith(list[i], ".tif")  | endsWith(list[i], ".jpg")){
         		open(dir+list[i]);
         		TmpTitle2=getTitle();
         		run("MeasureCurrent [1]");
